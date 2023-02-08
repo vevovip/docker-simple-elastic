@@ -1,0 +1,54 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    container_name: simple-elasticsearch
+    environment:
+      - cluster.name=elastic-udt-cluster
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - discovery.type=single-node
+      - node.name=elasticsearch4
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - simple-elasticsearch-data:/usr/share/elastiscsearch/data:rw
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - elasticNetwork
+    restart: unless-stopped
+
+#  kibana:
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:7.4.0
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - 5601:5601
+#    depends_on:
+#      - elasticsearch
+
+volumes:
+  simple-elasticsearch-data:
+    driver: local
+
+networks:
+  elasticNetwork:
+    driver: bridge
+
+#networks:
+#  dev-back:
+#    driver: bridge
+#    name: dockernet-local
