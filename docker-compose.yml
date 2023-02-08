@@ -5,13 +5,13 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: simple-elasticsearch
     environment:
-      - cluster.name=elastic-udt-cluster
+      - cluster.name=elastic-cluster-one
       - ELASTIC_USERNAME=${ELASTIC_USERNAME}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.security.enabled=true
       - xpack.security.transport.ssl.enabled=true
       - discovery.type=single-node
-      - node.name=elasticsearch4
+      - node.name=elasticsearch1
     ulimits:
       memlock:
         soft: -1
@@ -22,12 +22,12 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-      - simple-elasticsearch-data:/usr/share/elastiscsearch/data:rw
+      - ./esdata1:/usr/share/elasticsearch/data:rw
     ports:
       - 9200:9200
       - 9300:9300
     networks:
-      - elasticNetwork
+      - elk
     restart: unless-stopped
 
 #  kibana:
@@ -41,11 +41,11 @@ services:
 #      - elasticsearch
 
 volumes:
-  simple-elasticsearch-data:
+  esdata1:
     driver: local
 
 networks:
-  elasticNetwork:
+  elk:
     driver: bridge
 
 #networks:
